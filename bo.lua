@@ -1,0 +1,158 @@
+local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Maxgat5/UiLib/main/lua')))()
+local w = library:CreateWindow("Pet Simulator X")
+local b = w:CreateFolder("Pet Collection")
+local e = w:CreateFolder("Mix")
+local u = w:CreateFolder("Credits")
+
+b:Button("Start",function()
+    if game:GetService("Workspace")["__MAP"].Interactive:FindFirstChild("Dominus Gate") then
+        game:GetService("Workspace")["__MAP"].Interactive["Dominus Gate"]:Destroy()
+    end
+    Eggs = {}
+    noclip = true
+    for i,v in pairs(game:GetService("Workspace")["__MAP"].Eggs:GetDescendants()) do
+        if v.Name == "PriceHUD" then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Parent.Egg.CFrame.Position + Vector3.new(0,5,0))
+            wait(.2)
+            for i1,v1 in pairs(v.Parent.EggInfo.Frame.Pets:GetChildren()) do
+                if v1.ClassName == "Frame" then
+                    table.insert(Eggs,v1.Thumbnail.Image)
+                end
+            end
+            wait(.1)
+        end
+    end
+    noclip = false
+    game:GetService("Players").LocalPlayer.PlayerGui.Collection.Enabled = true
+    game:GetService("Players").LocalPlayer.PlayerGui.Collection.Frame.Title.Text = "Select Pet"
+    game:GetService("Players").LocalPlayer.PlayerGui.Collection.Frame.Bottom.Visible = false
+    game:GetService("Players").LocalPlayer.PlayerGui.Collection.Frame.Container.Size = UDim2.new(1,0,1,0)
+    for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Collection.Frame.Container.Holder:GetChildren()) do
+        if v.ClassName == "TextButton" then
+            v.MouseButton1Click:Connect(function()
+                game:GetService("Players").LocalPlayer.PlayerGui.Collection.Enabled = false
+                SelectedImage = ""
+                EggName = ""
+                PetsCount = ""
+                EggPrice = ""
+                local ScG = Instance.new("ScreenGui",game:GetService("CoreGui"))
+                ScG.Name = "Maxgat5"
+                if not ScG:FindFirstChild("Maxgat5") then
+                    SelectedImage = v.PetIcon.Image
+                    local Cloned = v:Clone()
+                    Cloned.Parent = ScG
+                    Cloned.PetIcon.ImageColor3 = Color3.new(255,255,255)
+                    Cloned.PetIcon.Locked.Visible = false
+                    Cloned.Position = UDim2.new(0.053, 0,0.824, 0)
+                    Cloned.AnchorPoint = Vector2.new(0.5, 0)
+                    Cloned.Size = UDim2.new(0.076, 0,0.143, 0)
+                    Cloned.Name = "Maxgat5"
+                end
+                if ScG:FindFirstChild("Maxgat5") then
+                    if table.find(Eggs,v.PetIcon.Image) then
+                        print('Found!')
+                        SelectedImage = v.PetIcon.Image
+                        ScG.Maxgat5.PetIcon.Image = v.PetIcon.Image
+                        noclip = true
+                        for i,v in pairs(game:GetService("Workspace")["__MAP"].Eggs:GetDescendants()) do
+                            if v.Name == "PriceHUD" then
+                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Parent.Egg.CFrame.Position + Vector3.new(0,5,0))
+                                wait(.2)
+                                for i1,v1 in pairs(v.Parent.EggInfo.Frame.Pets:GetChildren()) do
+                                    if v1.ClassName == "Frame" then
+                                        if v1.Thumbnail.Image == SelectedImage then
+                                            EggPrice = v.EggCost.Amount.Text
+                                        end
+                                    end
+                                end
+                                wait(.1)
+                            end
+                        end
+                        noclip = false
+                        wait(2)
+                        for i2,v2 in pairs(game:GetService("Workspace")["__MAP"].Eggs:GetDescendants()) do
+                            if v2.Name == "Amount" then
+                                if v2.ClassName == "TextLabel" then
+                                    if v2.Text == EggPrice then
+                                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v2.Parent.Parent.Parent.Egg.CFrame.Position + Vector3.new(0,5,0))
+                                        repeat
+                                            wait()
+                                            keypress(0x45)
+                                            wait()
+                                            keyrelease(0x45)
+                                            wait()
+                                        until game:GetService("Players").LocalPlayer.PlayerGui.Message.Enabled == true
+                                        local test = tostring(game:GetService("Players").LocalPlayer.PlayerGui.Message.Frame.Desc.Text)
+                                        local test1 = string.gsub(test,"Buy and open ","@")
+                                        local test2 = string.gsub(test1,"a ","@")
+                                        local test3 = string.gsub(test2,"@.*@","")
+                                        local test4 = string.gsub(test3," for ","@")
+                                        local test5 = string.gsub(test4," Coins??","@")
+                                        local Egg = string.gsub(test5,"@.*@","")
+                                        EggName = Egg
+                                        print(EggName)
+                                        repeat
+                                            wait()
+                                            number = 0
+                                            for i,v3 in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Inventory.Frame.Main.Pets:GetChildren()) do
+                                                if v3:FindFirstChild("PetIcon") then
+  if v3.PetIcon.Image == SelectedImage then
+    number = number + 1
+                                                    end
+                                                end
+                                            end
+                                            PetsCount = number
+                                            workspace.__THINGS.__REMOTES["buy egg"]:InvokeServer({tostring(EggName),false})
+                                        until tonumber(PetsCount) ~= 0
+                                    end
+                                end
+                            end
+                        end
+                    else
+                        print('Not Found!')
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+e:Toggle("AntiAfk",function(bool)
+    shared.toggle = bool
+    AntiAfk = bool
+end)
+ 
+--Credits
+u:Button("icetea",function()
+end)
+ 
+
+game:GetService('RunService').Stepped:connect(function()
+    spawn(function()
+        if AntiAfk == true then
+            local bb=game:service'VirtualUser'
+            bb:CaptureController()
+            bb:ClickButton2(Vector2.new())
+        end
+    end)
+    if noclip == true then
+        game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+    end
+    for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Collection.Frame.Container.Holder:GetChildren()) do
+        if v.ClassName == "TextButton" then
+            if v.PetIcon.Locked.Visible == false then
+                v:Destroy()
+            end
+        end
+    end
+    for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Collection.Frame.Container.Holder:GetChildren()) do
+        if v.ClassName == "TextButton" then
+            if v.PetIcon.ImageColor3 == Color3.new(0, 0, 0) then
+                v.PetIcon.ImageColor3 = Color3.new(255,255,255)
+            end
+            if v.PetIcon.Locked.Visible == true then
+                v.PetIcon.Locked.TextTransparency = 1
+            end
+        end
+    end
+end)
